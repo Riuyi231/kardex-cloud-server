@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOMAIN="${KARDEX_DOMAIN:-kardex.duckdns.org}"
+DOMAIN="${KARDEX_DOMAIN:-kardexdigital.duckdns.org}"
 DUCK_TOKEN="${DUCK_TOKEN:-}"
 REPO_URL="${KARDEX_REPO:-https://github.com/Riuyi231/kardex-cloud-server.git}"
 APP_DIR="/opt/kardex-cloud-server"

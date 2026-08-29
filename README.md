@@ -12,13 +12,13 @@ KARDEX, configuren la nube una vez y trabajen desde cualquier lugar.
 ## Requisitos
 
 - Un VPS con Ubuntu/Debian (512 MB+ de RAM recomendado, 1 GB+ para OCR fluido).
-- Un dominio (recomendado: `kardex.duckdns.org` gratuito en https://duckdns.org).
+- Un dominio (recomendado: `kardexdigital.duckdns.org` gratuito en https://duckdns.org).
 - Puertos **80** y **443** abiertos (HTTPS lo gestiona Caddy).
 
 ## Despliegue en el VPS
 
 ```bash
-sudo KARDEX_DOMAIN=kardex.duckdns.org DUCK_TOKEN=tu-token-de-duckdns bash setup.sh
+sudo KARDEX_DOMAIN=kardexdigital.duckdns.org DUCK_TOKEN=tu-token-de-duckdns bash setup.sh
 ```
 
 (`DUCK_TOKEN` lo encuentras en https://duckdns.org → tu dominio → token. Es opcional
@@ -44,7 +44,7 @@ Configurables:
 
 | Variable | Default | Uso |
 | --- | --- | --- |
-| `KARDEX_DOMAIN` | `kardex.duckdns.org` | Dominio público del servidor |
+| `KARDEX_DOMAIN` | `kardexdigital.duckdns.org` | Dominio público del servidor |
 | `DUCK_TOKEN` | *(vacío)* | Token del dominio en duckdns (auto-DNS) |
 | `KARDEX_REPO` | `https://github.com/Riuyi231/kardex-cloud-server.git` | Repo a clonar |
 
