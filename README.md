@@ -15,38 +15,47 @@ KARDEX, configuren la nube una vez y trabajen desde cualquier lugar.
 - Un dominio (recomendado: `kardex.duckdns.org` gratuito en https://duckdns.org).
 - Puertos **80** y **443** abiertos (HTTPS lo gestiona Caddy).
 
-## Despliegue en el VPS (un comando)
+## Despliegue en el VPS
 
 ```bash
-KARDEX_DOMAIN=kardex.duckdns.org bash deploy/setup.sh
+sudo KARDEX_DOMAIN=kardex.duckdns.org DUCK_TOKEN=tu-token-de-duckdns bash setup.sh
 ```
 
-El script (debe ejecutarse como usuario con `sudo`):
+(`DUCK_TOKEN` lo encuentras en https://duckdns.org → tu dominio → token. Es opcional
+pero recomendado: apunta el DNS a la IP pública del VPS automáticamente.)
+
+El script (ejecutar como usuario con `sudo`):
 
 1. Instala **Node.js 22 LTS** (verifica >= 22.5, requerido para `node:sqlite`).
-2. Clona este repo en `/opt/kardex-cloud-server` e instala dependencias + datos
-   de Tesseract (`npm run tessdata`).
-3. Crea `.env` con un `JWT_SECRET` aleatorio.
-4. Instala el servicio systemd `kardex-cloud` (auto-arranque + reinicio).
-5. Configura **Caddy** como proxy inverso con HTTPS automático para tu dominio.
+2. Instala y configura **Caddy** (HTTPS automático).
+3. Clona el repo en `/opt/kardex-cloud-server` e instala dependencias + datos de
+   Tesseract (`npm run tessdata`), todo como el usuario del sistema **`kardex`**
+   (no corre como root).
+4. Crea `.env` con un `JWT_SECRET` aleatorio. Los datos viven en
+   `/var/lib/kardex` (base + backups), fuera del código.
+5. Apunta **DuckDNS** a la IP pública del VPS (si pasaste `DUCK_TOKEN`).
+6. Instala el servicio systemd `kardex-cloud` (auto-arranque + reinicio),
+   configura Caddy y abre solo los puertos **22/80/443** en el firewall local
+   (ufw).
+7. Verifica con `curl` que responde por `http://localhost:18010` y por
+   `https://tudominio`.
 
-Configurables al correrlo:
+Configurables:
 
 | Variable | Default | Uso |
 | --- | --- | --- |
 | `KARDEX_DOMAIN` | `kardex.duckdns.org` | Dominio público del servidor |
+| `DUCK_TOKEN` | *(vacío)* | Token del dominio en duckdns (auto-DNS) |
 | `KARDEX_REPO` | `https://github.com/Riuyi231/kardex-cloud-server.git` | Repo a clonar |
 
 ### Pasos manuales que no hace el script
 
-1. **DNS**: en https://duckdns.org apunta tu dominio a la **IP pública** del VPS
-   (el VPS normalmente tiene IP fija; configúrala una sola vez, o usa la
-   actualización automática por cron/curl de duckdns si tu VPS la rota).
-2. **Firewall del VPS** (GCP/Azure/AWS): abrir `80` y `443`:
+1. **Firewall del VPS** (GCP/Azure/AWS): abrir también a nivel de nube los
+   puertos **80** y **443** (además del ufw local), p. ej.:
    ```bash
    gcloud compute firewall-rules create allow-http --allow tcp:80,tcp:443
    ```
-3. **Cambiar la contraseña del admin inicial**: la primera vez entra con
+2. **Cambiar la contraseña del admin inicial**: la primera vez entra con
    `admin` / `admin123` desde la app (Conexión y servidor → nube → Conectar y
    guardar acceso) y cámbiala en **Usuarios**. No dejes las credenciales por defecto.
 
@@ -64,9 +73,9 @@ curl -X POST https://tudominio/api/auth/login \
 
 - **Logs**: `sudo journalctl -u kardex-cloud -f`
 - **Reiniciar**: `sudo systemctl restart kardex-cloud`
-- **Actualizar**: `cd /opt/kardex-cloud-server && sudo git pull && sudo npm install --production && sudo systemctl restart kardex-cloud`
-- **Backups**: se generan en `data/backups/` (copialos a otro disco de forma
-  periódica; por ejemplo `cron` + `scp`).
+- **Actualizar**: `cd /opt/kardex-cloud-server && sudo git pull && sudo chown -R kardex:kardex . && sudo -u kardex npm install --omit=dev --no-audit --no-fund && sudo systemctl restart kardex-cloud`
+- **Backups**: se generan en `/var/lib/kardex/backups` (copialos a otro disco de
+  forma periódica; por ejemplo `cron` + `scp`).
 - **Ver tráfico**: `sudo journalctl -u kardex-cloud | grep "\[API\]"`
 
 ## Endpoints
