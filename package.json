@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Servidor cloud para KARDEX Digital",
   "main": "src/index.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "start": "node src/index.js",
     "tessdata": "node scripts/download-tessdata.js"

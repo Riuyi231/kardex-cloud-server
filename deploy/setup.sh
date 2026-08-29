@@ -4,13 +4,19 @@ set -e
 echo "=== KARDEX Cloud Server — Setup GCP ==="
 echo ""
 
-# 1. Instalar Node.js 22 LTS
+# 1. Instalar Node.js 22 LTS (necesita >= 22.5 para la base de datos integrada)
 if ! command -v node &> /dev/null; then
   echo "[1/6] Instalando Node.js 22 LTS..."
   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
   sudo apt-get install -y nodejs
 else
   echo "[1/6] Node.js ya instalado: $(node -v)"
+fi
+NODE_MAJOR=$(node -p "Number(process.versions.node.split('.')[0])")
+NODE_MINOR=$(node -p "Number(process.versions.node.split('.')[1])")
+if [ "$NODE_MAJOR" -lt 22 ] || { [ "$NODE_MAJOR" -eq 22 ] && [ "$NODE_MINOR" -lt 5 ]; }; then
+  echo "ERROR: se necesita Node.js >= 22.5.0 (tienes $(node -v)). Actualiza e inténtalo de nuevo." >&2
+  exit 1
 fi
 
 # 2. Clonar repo (ajusta URL)
@@ -28,6 +34,7 @@ npm install --production
 npm run tessdata
 
 # 3. .env
+mkdir -p "$APP_DIR/data"
 if [ ! -f "$APP_DIR/.env" ]; then
   JWT_SECRET=$(openssl rand -hex 32)
   cat > "$APP_DIR/.env" <<EOF
@@ -94,3 +101,10 @@ echo "=== Listo ==="
 echo "Servidor corriendo en: http://localhost:18010"
 echo "Domain configurado: $DOMAIN"
 echo "Logs: sudo journalctl -u kardex-cloud -f"
+echo ""
+echo "Pendientes manuales:"
+echo "  1) Apuntar el DNS de $DOMAIN a la IP publica del VPS (duckdns: https://duckdns.org/domains)"
+echo "  2) Abrir los puertos 80 y 443 en el VPS (GCP: gcloud compute firewall-rules create allow-http --allow tcp:80,tcp:443)"
+echo "  3) Cambiar la contrasena del admin inicial: entra a la app -> Conexion y servidor -> nube, con admin / admin123"
+echo "     y luego en la app: Usuarios -> cambiar contrasena (o edita el usuario admin)"
+echo "  4) Los backups se guardan en $APP_DIR/data/backups al cerrar el servicio"
