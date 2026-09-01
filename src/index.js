@@ -16,7 +16,15 @@ d.init();
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '32mb' }));
-app.use(rateLimit({ windowMs: config.RATE_LIMIT_WINDOW, max: config.RATE_LIMIT_MAX }));
+app.use(rateLimit({
+  windowMs: config.RATE_LIMIT_WINDOW,
+  max: config.RATE_LIMIT_MAX,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, next, opts) => {
+    res.status(opts.statusCode).json({ ok: false, error: 'Demasiadas peticiones al servidor, espere unos segundos e intente de nuevo' });
+  }
+}))
 
 app.get('/api/ping', pingHandler);
 app.post('/api/auth/login', loginHandler);
