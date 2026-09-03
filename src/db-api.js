@@ -10,7 +10,7 @@ const NS_METHODS = {
   incentivos: ['list', 'listForPeriod', 'create', 'update', 'delete'],
   pagoVacaciones: ['get', 'listForPeriod', 'totalDiasPagados', 'save', 'delete'],
   deduccionesManuales: ['listForPeriod', 'listForEmployee', 'create', 'update', 'delete'],
-  salarioHistorial: ['record', 'listForEmployee', 'getSalarioPromedio', 'resetBaseline'],
+  salarioHistorial: ['record', 'listForEmployee', 'getSalarioPromedio', 'resetBaseline', 'getRegaliaMasivo'],
   liquidaciones: ['listForEmployee', 'listAll', 'save', 'delete'],
   reportes: ['plantilla', 'antiguedad', 'cumpleanos', 'departamentos', 'nominaDepartamentos', 'empleadosCompleto', 'cedulasVencer', 'aniversarios', 'beneficios'],
   audit: ['add', 'list'],

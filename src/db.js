@@ -602,6 +602,22 @@ const salarioHistorial = {
     let totalDias = 0, totalSalarioDias = 0;
     for (const seg of timeline) { totalDias += seg.dias; totalSalarioDias += seg.salario * seg.dias; }
     return totalDias > 0 ? totalSalarioDias / totalDias : salarioInicio;
+  },
+  getRegaliaMasivo(anio) {
+    const y = Number(anio) || new Date().getFullYear();
+    const inicioAnio = `${y}-01-01 00:00:00`;
+    const finAnio = `${y}-12-31 23:59:59`;
+    const empleados = all("SELECT id, salario FROM employees WHERE status = 'activo'");
+    const salarios = {};
+    const cambios = {};
+    for (const emp of empleados) {
+      salarios[emp.id] = this.getSalarioPromedio(emp.id, y);
+      cambios[emp.id] = all(
+        'SELECT fecha_cambio, salario, salario_anterior, motivo FROM salario_historial WHERE employee_id = ? AND fecha_cambio >= ? AND fecha_cambio <= ? ORDER BY fecha_cambio',
+        [emp.id, inicioAnio, finAnio]
+      );
+    }
+    return { anio: y, salarios, cambios };
   }
 };
 
