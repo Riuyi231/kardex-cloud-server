@@ -28,5 +28,6 @@ module.exports = {
   LICENSE_KEY: process.env.LICENSE_KEY || '',
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   RATE_LIMIT_WINDOW: Number(process.env.RATE_LIMIT_WINDOW_MS) || 60000,
-  RATE_LIMIT_MAX: Number(process.env.RATE_LIMIT_MAX) || 300
+  RATE_LIMIT_MAX: Number(process.env.RATE_LIMIT_MAX) || 300,
+  TRUST_PROXY: Number(process.env.TRUST_PROXY) || 0
 };

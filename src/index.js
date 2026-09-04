@@ -14,6 +14,7 @@ const { pingHandler } = require('./routes/ping');
 d.init();
 
 const app = express();
+if (config.TRUST_PROXY) app.set('trust proxy', config.TRUST_PROXY);
 app.use(cors());
 app.use(express.json({ limit: '32mb' }));
 app.use(rateLimit({
